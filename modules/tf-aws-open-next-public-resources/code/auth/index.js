@@ -76,5 +76,14 @@ exports.handler = async (event) => {
     request.headers[key.toLowerCase()] = [{ key, value }];
   }
 
+  // Rebuild the query string from the signed request using URLSearchParams
+  // This is to ensure that the query string is properly formatted and to avoid
+  // issues with special characters e.g. ~ needs to be encoded as %7E
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(signedRequest.query)) {
+    params.append(key, value);
+  }
+  request.querystring = params.toString();
+
   return request;
 };
